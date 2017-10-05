@@ -1,0 +1,5 @@
+
+github "Alamofire/Alamofire" ~> 4.5
+github "ReactiveX/RxSwift" "rxswift4.0-swift4.0"
+github "antitypical/Result" ~> 3.2
+
