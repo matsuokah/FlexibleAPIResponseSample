@@ -13,11 +13,9 @@ import Result
 struct GithubAPIResponseBase<T: Decodable>: BasicAPIResponse {
 	typealias ResponseT = T
 	typealias ErrorT = APIError
-	
-	private enum CodingKeys: String, CodingKey {
-		case items = "items"
-	}
-	
+
+	private let total_count: Int
+	private let incomplete_results: Bool
 	private let items: ResponseT?
 }
 
@@ -28,4 +26,4 @@ extension GithubAPIResponseBase: APIResult {
 	}
 }
 
-extension GithubAPIResponseBase: AnyAPIResultConvartibleType {}
+extension GithubAPIResponseBase: AnyAPIResultConvartibleType { }

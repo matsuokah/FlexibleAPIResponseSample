@@ -20,9 +20,18 @@ protocol AlamofireParameters {
 
 protocol Parameter {
 	associatedtype Key: ParameterKey
-	
-	var parameter: [Key: Any] { get set }
-	func setParameter(value: Any, forKey key: Key)
+
+	var parameter: [Self.Key: Any] { get set }
+	mutating func setParameter(_ value: Any, forKey key: Key)
+}
+
+extension Parameter {
+	mutating func setParameter(_ value: Any, forKey key: Key) {
+		parameter[key] = value
+	}
+	mutating func setParameter<T: RawRepresentable>(_ value: T, forKey key: Key) where T.RawValue == String {
+		parameter[key] = value.rawValue
+	}
 }
 
 extension AlamofireParameters where Self: Parameter {

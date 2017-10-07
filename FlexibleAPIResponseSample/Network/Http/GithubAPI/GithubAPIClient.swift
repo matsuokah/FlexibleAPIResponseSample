@@ -13,14 +13,14 @@ import RxSwift
 
 struct GithubAPIClient: APIClient {
 	var sessionManager: SessionManager
-	
+
 	init() {
 		sessionManager = Alamofire.SessionManager(configuration: URLSessionConfiguration.default)
 	}
 }
 
 extension GithubAPIClient {
-	func get<Response>(apiRequest: Request) -> Observable<Response> where Response : Decodable {
+	func get<Response>(apiRequest: Request) -> Observable<Response> where Response: Decodable {
 		typealias BasicResponse = GithubAPIResponseBase<Response>
 		return _get(apiRequest: apiRequest)
 			.map { (res: BasicResponse) in

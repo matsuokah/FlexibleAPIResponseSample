@@ -12,6 +12,16 @@ import Alamofire
 import RxSwift
 import Result
 
+fileprivate final class DispatchQueueManager {
+	static let shared = DispatchQueueManager()
+
+	let queue: DispatchQueue
+
+	private init() {
+		queue = DispatchQueue(label: "", qos: .userInitiated, attributes: DispatchQueue.Attributes.concurrent, autoreleaseFrequency: .inherit, target: nil)
+	}
+}
+
 protocol APIClient {
 	var sessionManager: SessionManager { get }
 	func get<Response: Decodable>(apiRequest: Request) -> Observable<Response>
@@ -23,16 +33,15 @@ internal extension APIClient {
 	}
 }
 
-struct APIError: Error {}
-
 private extension APIClient {
 	private func request<Response: Decodable>(method: HTTPMethod, apiRequest: Request) -> Observable<Response> {
-		return Single<Response>.create { single in
+		return Single.create { observer in
 			weak var request = self.sessionManager.request(apiRequest.endpoint, method: method, parameters: apiRequest.parameters, encoding: apiRequest.encoding)
 			request?
 				.validate()
-				.responseData {
-					self.handleResponse(response: $0, single: single)
+				.debugLog()
+				.responseData(queue: DispatchQueueManager.shared.queue) {
+					self.handleResponse(response: $0, observer: observer)
 			}
 			return Disposables.create {
 				request?.cancel()
@@ -40,17 +49,26 @@ private extension APIClient {
 		}.asObservable()
 	}
 
-	private func handleResponse<Response: Decodable>(response: DataResponse<Data>, single: (SingleEvent<Response>) -> ()) {
+	private func handleResponse<Response: Decodable>(response: DataResponse<Data>, observer: ((SingleEvent<Response>) -> Void)) {
 		guard let data = response.data else {
-			return single(.error(APIError()))
+			return observer(.error(APIError()))
 		}
-		
+
 		let jsonDecoder = JSONDecoder()
 		do {
 			let parsed = try jsonDecoder.decode(Response.self, from: data)
-			single(.success(parsed))
+			observer(.success(parsed))
 		} catch let error {
-			single(.error(error))
+			NSLog("\(error)")
+			NSLog("\(String(data: data, encoding: .utf8) ?? "")")
+			observer(.error(error))
 		}
+	}
+}
+
+private extension DataRequest {
+	func debugLog() -> Self {
+		NSLog("\(self.description)")
+		return self
 	}
 }

@@ -136,5 +136,9 @@ tags
 Carthage/Checkouts
 Carthage/Build
 
+
+vendor/
+.bundle/
+
 # End of https://www.gitignore.io/api/vim,osx,macos,swift,xcode,carthage
 

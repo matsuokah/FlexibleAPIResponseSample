@@ -17,7 +17,7 @@ extension GitHubAPIEndpoint {
 	var root: URL {
 		return URL(string: URLConstants.GithubAPIURLRoot)!
 	}
-	
+
 	var endpoint: URL {
 		return root.appendingPathComponent([functionPath, path].joined(separator: "/"))
 	}
@@ -27,7 +27,7 @@ extension GitHubAPIEndpoint {
 // MARK: - GithubSearchAPIEndpoint
 enum GithubSearchAPIEndpoint: String, GitHubAPIEndpoint {
 	case repositories
-	
+
 	var path: String {
 		return self.rawValue
 	}

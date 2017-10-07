@@ -11,15 +11,15 @@ import Foundation
 import Result
 import RxSwift
 
+protocol BasicAPIResponse: Decodable {
+	associatedtype ResponseT: Decodable
+}
+
 protocol APIResult {
 	associatedtype ResponseT: Decodable
 	associatedtype ErrorT: Swift.Error
-	
-	var result: Result<ResponseT, ErrorT> { get }
-}
 
-protocol BasicAPIResponse: Decodable {
-	associatedtype ResponseT: Decodable
+	var result: Result<ResponseT, ErrorT> { get }
 }
 
 extension Observable {
@@ -33,11 +33,9 @@ extension Observable {
 				case .failure(let e):
 					throw e
 				}
-			}
-			.share().replay(1)
+		}
 	}
 }
-
 
 struct AnyAPIResult<ResponseT: Decodable, ErrorT: Swift.Error>: APIResult {
 

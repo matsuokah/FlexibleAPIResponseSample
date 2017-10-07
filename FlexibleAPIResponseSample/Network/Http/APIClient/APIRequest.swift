@@ -25,7 +25,7 @@ struct APIRequest<E: Endpoint, P: AlamofireParameters>: Request {
 	let apiEndpoint: E
 	let apiParameters: P
 	var encoding: ParameterEncoding
-	
+
 	var endpoint: URL {
 		return apiEndpoint.endpoint
 	}
